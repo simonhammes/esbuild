@@ -86,6 +86,9 @@ interface CommonOptions {
 
   /** Documentation: https://esbuild.github.io/api/#tsconfig-raw */
   tsconfigRaw?: string | TsconfigRaw
+
+  /** Experimental: preserve comments matching a regular expression */
+  preserveComments?: RegExp
 }
 
 export interface TsconfigRaw {

@@ -2978,6 +2978,15 @@ c {
 /* entry.css */
 
 ================================================================================
+TestLegalCommentsHaveLowerPriorityThanPreserveComments
+---------- /out/entry.js.LEGAL.txt ----------
+//! Copyright
+
+---------- /out/entry.js ----------
+//! [PositionForAppStart]
+export let x;
+
+================================================================================
 TestLegalCommentsInline
 ---------- /out/entry.js ----------
 // a.js
@@ -5395,6 +5404,13 @@ x(
 );
 x(/* @__KEY__ */ "key", /* @__KEY__ */ `key`);
 x(/* @__KEY__ */ "alsoKey", /* @__KEY__ */ `alsoKey`);
+
+================================================================================
+TestPreserveComments
+---------- /out.js ----------
+/* [PositionForAppBegin] */
+App({});
+/* [PositionForAppEnd] */
 
 ================================================================================
 TestQuotedProperty

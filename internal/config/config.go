@@ -479,6 +479,8 @@ type Options struct {
 	NeedsMetafile          bool
 	SourceMap              SourceMap
 	ExcludeSourcesContent  bool
+
+	PreserveComments *regexp.Regexp
 }
 
 type TSImportsNotUsedAsValues uint8

@@ -445,12 +445,13 @@ type thenCatchChain struct {
 // "package.json" or "tsconfig.json" files that were changed since the last
 // build.
 type Options struct {
-	injectedFiles  []config.InjectedFile
-	jsx            config.JSXOptions
-	tsAlwaysStrict *config.TSAlwaysStrict
-	mangleProps    *regexp.Regexp
-	reserveProps   *regexp.Regexp
-	dropLabels     []string
+	injectedFiles    []config.InjectedFile
+	jsx              config.JSXOptions
+	tsAlwaysStrict   *config.TSAlwaysStrict
+	mangleProps      *regexp.Regexp
+	reserveProps     *regexp.Regexp
+	preserveComments *regexp.Regexp
+	dropLabels       []string
 
 	// This pointer will always be different for each build but the contents
 	// shouldn't ever behave different semantically. We ignore this field for the
@@ -501,13 +502,14 @@ func OptionsForYarnPnP() Options {
 
 func OptionsFromConfig(options *config.Options) Options {
 	return Options{
-		injectedFiles:  options.InjectedFiles,
-		jsx:            options.JSX,
-		defines:        options.Defines,
-		tsAlwaysStrict: options.TSAlwaysStrict,
-		mangleProps:    options.MangleProps,
-		reserveProps:   options.ReserveProps,
-		dropLabels:     options.DropLabels,
+		injectedFiles:    options.InjectedFiles,
+		jsx:              options.JSX,
+		defines:          options.Defines,
+		tsAlwaysStrict:   options.TSAlwaysStrict,
+		mangleProps:      options.MangleProps,
+		reserveProps:     options.ReserveProps,
+		preserveComments: options.PreserveComments,
+		dropLabels:       options.DropLabels,
 
 		optionsThatSupportStructuralEquality: optionsThatSupportStructuralEquality{
 			unsupportedJSFeatures:             options.UnsupportedJSFeatures,
@@ -8108,17 +8110,35 @@ func (p *parser) parseStmtsUpTo(end js_lexer.T, opts parseStmtOpts) []js_ast.Stm
 
 	for {
 		// Preserve some statement-level comments
-		comments := p.lexer.LegalCommentsBeforeToken
-		if len(comments) > 0 {
-			for _, comment := range comments {
+		legalComments := p.lexer.LegalCommentsBeforeToken
+		if len(legalComments) > 0 {
+			for _, comment := range legalComments {
 				stmts = append(stmts, js_ast.Stmt{
 					Loc: comment.Loc,
 					Data: &js_ast.SComment{
 						Text:           p.source.CommentTextWithoutIndent(comment),
-						IsLegalComment: true,
+						IsLegalComment: true, // TODO
 					},
 				})
 			}
+		}
+
+		comments := p.lexer.CommentsBeforeToken
+		for _, comment := range comments {
+			text := p.source.CommentTextWithoutIndent(comment)
+			preserveComment := p.options.preserveComments != nil && p.options.preserveComments.MatchString(text)
+
+			if !preserveComment {
+				continue
+			}
+
+			stmts = append(stmts, js_ast.Stmt{
+				Loc: comment.Loc,
+				Data: &js_ast.SComment{
+					Text:           text,
+					IsLegalComment: false,
+				},
+			})
 		}
 
 		if p.lexer.Token == end {

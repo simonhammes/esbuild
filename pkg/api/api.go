@@ -343,6 +343,8 @@ type BuildOptions struct {
 	Write          bool          // Documentation: https://esbuild.github.io/api/#write
 	AllowOverwrite bool          // Documentation: https://esbuild.github.io/api/#allow-overwrite
 	Plugins        []Plugin      // Documentation: https://esbuild.github.io/plugins/
+
+	PreserveComments string // Experimental: preserve comments matching a regular expression
 }
 
 type EntryPoint struct {
@@ -446,6 +448,8 @@ type TransformOptions struct {
 
 	Sourcefile string // Documentation: https://esbuild.github.io/api/#sourcefile
 	Loader     Loader // Documentation: https://esbuild.github.io/api/#loader
+
+	PreserveComments string // Experimental: preserve comments matching a regular expression
 }
 
 type TransformResult struct {

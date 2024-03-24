@@ -1700,7 +1700,7 @@ func transformImpl(input string, transformOpts TransformOptions) TransformResult
 		LineLimit:             transformOpts.LineLimit,
 		MangleProps:           validateRegex(log, "mangle props", transformOpts.MangleProps),
 		ReserveProps:          validateRegex(log, "reserve props", transformOpts.ReserveProps),
-		PreserveComments:                   validateRegex(log, "preserve comments", transformOpts.PreserveComments),
+		PreserveComments:      validateRegex(log, "preserve comments", transformOpts.PreserveComments),
 		MangleQuoted:          transformOpts.MangleQuoted == MangleQuotedTrue,
 		DropLabels:            append([]string{}, transformOpts.DropLabels...),
 		DropDebugger:          (transformOpts.Drop & DropDebugger) != 0,
